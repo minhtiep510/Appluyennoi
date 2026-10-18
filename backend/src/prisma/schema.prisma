@@ -1,0 +1,62 @@
+generator client{
+    provider="prisma-client-js"
+}
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+model User{
+    id String  @id @default(uuid())
+    email String @unique
+    password String
+    fullName    String
+    role String @default("USER")
+    createdAt DateTime @default(now())
+    isVerified     Boolean           @default(false)
+    verifyOtp      String?           // Mã OTP 6 số
+    otpExpiresAt   DateTime?
+    histories PracticeHistory[]
+}
+// 2. Bảng Bài học / Chủ đề
+model Lesson {
+  id          String         @id @default(uuid())
+  title       String
+  level       String         // A1, A2, B1, IELTS...
+  description String?
+  createdAt   DateTime       @default(now())
+
+  // Quan hệ 1 - N: Một bài học có nhiều câu thoại
+  dialogues   DialogueLine[]
+}
+model DialogueLine {
+  id            Int               @id @default(autoincrement())
+  lessonId      String
+  orderIndex    Int
+  speaker       String            // 'ai' hoặc 'user'
+  characterName String            // 'Barista', 'You'...
+  text          String
+  ipa           String?
+  translation   String?
+  createdAt     DateTime          @default(now())
+
+  lesson        Lesson            @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  histories     PracticeHistory[]
+
+  @@index([lessonId])
+}
+model PracticeHistory {
+  id             String       @id @default(uuid())
+  userId         String
+  dialogueLineId Int
+  spokenText     String       // Câu người dùng thực tế nói ra
+  accuracyScore  Int          // Điểm % chính xác
+  feedback       String?      // Nhận xét của AI
+  audioUrl       String?      // File ghi âm (nếu muốn lưu lại để nghe lại)
+  createdAt      DateTime     @default(now())
+
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dialogue       DialogueLine @relation(fields: [dialogueLineId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([dialogueLineId])
+}
