@@ -21,7 +21,7 @@ model User{
 model Lesson {
   id          String         @id @default(uuid())
   title       String
-  level       String         // A1, A2, B1, IELTS...
+  level       String       
   description String?
   createdAt   DateTime       @default(now())
 
@@ -32,8 +32,8 @@ model DialogueLine {
   id            Int               @id @default(autoincrement())
   lessonId      String
   orderIndex    Int
-  speaker       String            // 'ai' hoặc 'user'
-  characterName String            // 'Barista', 'You'...
+  speaker       String            
+  characterName String          
   text          String
   ipa           String?
   translation   String?

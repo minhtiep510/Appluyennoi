@@ -14,7 +14,7 @@ async function main() {
     create: {
       email: 'admin@example.com',
       fullName: 'Quản trị viên',
-      password: adminPasswordHash,
+      password: 'Admin@123',
       role: 'ADMIN',
       isVerified: true
     }
