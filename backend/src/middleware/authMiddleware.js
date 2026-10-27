@@ -2,10 +2,7 @@ const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key_123456';
 
-/**
- * 1. Middleware kiểm tra đăng nhập (Xác thực JWT Token)
- * Áp dụng cho bất kỳ API nào yêu cầu người dùng phải đăng nhập
- */
+
 exports.verifyToken = (req, res, next) => {
   try {
     const authHeader = req.headers['authorization'];

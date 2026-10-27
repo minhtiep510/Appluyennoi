@@ -64,3 +64,63 @@ exports.getProfile = async (req, res) => {
     });
   }
 };
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const result = await authService.updateProfile(req.user.userId, req.body);
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error('Lỗi cập nhật profile:', error);
+    return res.status(error.statusCode || 500).json({
+      error: error.message || 'Không thể cập nhật thông tin cá nhân.',
+    });
+  }
+};
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const result = await authService.forgotPassword(req.body);
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error('Lỗi quên mật khẩu:', error);
+    return res.status(error.statusCode || 500).json({
+      error: error.message || 'Không thể gửi mã khôi phục mật khẩu lúc này.',
+    });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const result = await authService.resetPassword(req.body);
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error('Lỗi đặt lại mật khẩu:', error);
+    return res.status(error.statusCode || 500).json({
+      error: error.message || 'Không thể đặt lại mật khẩu.',
+    });
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  try {
+    const result = await authService.changePassword(req.user.userId, req.body);
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error('Lỗi đổi mật khẩu:', error);
+    return res.status(error.statusCode || 500).json({
+      error: error.message || 'Không thể đổi mật khẩu.',
+    });
+  }
+};
+
+exports.deleteAccount = async (req, res) => {
+  try {
+    const result = await authService.deleteAccount(req.user.userId);
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error('Lỗi xóa tài khoản:', error);
+    return res.status(error.statusCode || 500).json({
+      error: error.message || 'Không thể xóa tài khoản lúc này.',
+    });
+  }
+};

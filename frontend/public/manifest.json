@@ -1,0 +1,19 @@
+{
+  "name": "SpeakAI - Luyện IELTS Speaking với AI Real-time",
+  "short_name": "SpeakAI",
+  "description": "Ứng dụng luyện nói tiếng Anh và IELTS Speaking tương tác thời gian thực với AI",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#00897b",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
+

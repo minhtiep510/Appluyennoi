@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "SpeakAI Mobile",
+    "slug": "speakai-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "primaryColor": "#00897b",
+    "splash": {
+      "backgroundColor": "#0f172a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "vn.speakai.mobile"
+    },
+    "android": {
+      "package": "vn.speakai.mobile",
+      "adaptiveIcon": {
+        "backgroundColor": "#00897b"
+      }
+    }
+  }
+}
+

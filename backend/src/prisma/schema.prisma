@@ -1,39 +1,49 @@
-generator client{
-    provider="prisma-client-js"
+generator client {
+  provider = "prisma-client-js"
 }
+
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
-model User{
-    id String  @id @default(uuid())
-    email String @unique
-    password String
-    fullName    String
-    role String @default("USER")
-    createdAt DateTime @default(now())
-    isVerified     Boolean           @default(false)
-    verifyOtp      String?           // Mã OTP 6 số
-    otpExpiresAt   DateTime?
-    histories PracticeHistory[]
+
+// 1. Bảng Người dùng
+model User {
+  id                  String                      @id @default(uuid())
+  email               String                      @unique
+  password            String
+  fullName            String
+  role                String                      @default("USER")
+  targetLevel         String?                     @default("B1") // B1, B2, C1, C2 (Mức giao tiếp mục tiêu)
+  learningGoal        String?                     @default("PHONG_VAN") // DU_HOC, PHAT_TRIEN, PHONG_VAN, GIAO_TIEP (Mục đích học)
+  createdAt           DateTime                    @default(now())
+  isVerified          Boolean                     @default(false)
+  verifyOtp           String?                     // Mã OTP 6 số
+  otpExpiresAt        DateTime?
+  histories           PracticeHistory[]
+  vocabularyPractices VocabularyPracticeHistory[]
 }
-// 2. Bảng Bài học / Chủ đề
+
+// 2. Bảng Bài học / Đề tài Luyện nói
 model Lesson {
   id          String         @id @default(uuid())
   title       String
-  level       String       
+  level       String         @default("B1") // B1, B2, C1, C2
   description String?
+  imageUrl    String?        // Ảnh minh họa đề tài
   createdAt   DateTime       @default(now())
 
   // Quan hệ 1 - N: Một bài học có nhiều câu thoại
   dialogues   DialogueLine[]
 }
+
+// 3. Bảng Câu thoại đối thoại
 model DialogueLine {
   id            Int               @id @default(autoincrement())
   lessonId      String
   orderIndex    Int
-  speaker       String            
-  characterName String          
+  speaker       String
+  characterName String
   text          String
   ipa           String?
   translation   String?
@@ -44,19 +54,73 @@ model DialogueLine {
 
   @@index([lessonId])
 }
-model PracticeHistory {
-  id             String       @id @default(uuid())
-  userId         String
-  dialogueLineId Int
-  spokenText     String       // Câu người dùng thực tế nói ra
-  accuracyScore  Int          // Điểm % chính xác
-  feedback       String?      // Nhận xét của AI
-  audioUrl       String?      // File ghi âm (nếu muốn lưu lại để nghe lại)
-  createdAt      DateTime     @default(now())
 
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  dialogue       DialogueLine @relation(fields: [dialogueLineId], references: [id], onDelete: Cascade)
+// 4. Bảng Lịch sử luyện nói
+model PracticeHistory {
+  id                  String       @id @default(uuid())
+  userId              String
+  dialogueLineId      Int
+  spokenText          String       // Câu người dùng thực tế nói ra
+  accuracyScore       Int          // Điểm % chính xác
+  feedback            String?      // Nhận xét của AI
+  audioUrl            String?      // File ghi âm (nếu muốn lưu lại để nghe lại)
+  createdAt           DateTime     @default(now())
+  mispronounced_words String
+  user                User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dialogue            DialogueLine @relation(fields: [dialogueLineId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([dialogueLineId])
 }
+
+// 5. Bảng Chủ đề Từ vựng (VocabularyTopic)
+model VocabularyTopic {
+  id           String                      @id @default(uuid())
+  name         String                      @unique // Tên chủ đề (VD: Work & Study, AI & Technology...)
+  description  String?                     // Mô tả chi tiết chủ đề từ vựng
+  imageUrl     String?                     // Đường dẫn ảnh đại diện của Chủ đề (URL hoặc Base64)
+  level        String                      @default("B1") // Trình độ: B1, B2, C1, C2
+  createdAt    DateTime                    @default(now())
+
+  // Quan hệ 1 - N: Một chủ đề có nhiều từ vựng và lịch sử làm bài (Chính tả / Trắc nghiệm)
+  vocabularies Vocabulary[]
+  practices    VocabularyPracticeHistory[]
+}
+
+// 6. Bảng Từ vựng (Vocabulary)
+model Vocabulary {
+  id           Int             @id @default(autoincrement())
+  topicId      String          // Khóa ngoại liên kết tới Chủ đề Từ vựng
+  word         String          // Từ vựng hoặc cụm từ tiếng Anh
+  pos          String          @default("Noun") // Từ loại (Noun, Verb, Adjective, Phrasal Verb...)
+  ipa          String?         // Phiên âm quốc tế IPA
+  meaning      String          // Nghĩa tiếng Việt
+  level        String          @default("B1") // Cấp độ: B1, B2, C1, C2
+  synonyms     String?         // Từ đồng nghĩa nâng cấp
+  example      String?         // Câu ví dụ tiếng Anh
+  exampleTrans String?         // Bản dịch câu ví dụ tiếng Việt
+  createdAt    DateTime        @default(now())
+
+  topic        VocabularyTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@index([topicId])
+}
+
+model VocabularyPracticeHistory {
+  id             String          @id @default(uuid())
+  userId         String
+  topicId        String
+  practiceType   String          @default("DICTATION") // "DICTATION" (Ghi chép chính tả) | "QUIZ" (Trắc nghiệm)
+  score          Int             // Điểm phần trăm (0 - 100)
+  correctCount   Int             @default(0) // Số câu trả lời đúng
+  totalQuestions Int             @default(0) // Tổng số từ trong bài
+  detailsJson    String?         // Chi tiết các từ đã viết đúng/sai (JSON)
+  createdAt      DateTime        @default(now())
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic          VocabularyTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([topicId])
+}
+
