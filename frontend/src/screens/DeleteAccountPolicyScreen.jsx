@@ -50,10 +50,6 @@ export default function DeleteAccountPolicyScreen({
   return (
     <div className="policy-page-container animate-page-enter">
       <div className="policy-header-banner">
-      
-        <div className="policy-icon-badge" style={{ background: '#dc2626' }}>
-          <FiUserX />
-        </div>
         <h1 className="policy-main-title">Chính Sách Xoá Tài Khoản</h1>
         <p className="policy-update-date">
           Quyền bảo vệ dữ liệu cá nhân &amp; Tuân thủ chính sách App Store /

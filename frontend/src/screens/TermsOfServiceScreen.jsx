@@ -15,10 +15,6 @@ export default function TermsOfServiceScreen({ onNavigate }) {
   return (
     <div className="policy-page-container animate-page-enter">
       <div className="policy-header-banner">
-        
-        <div className="policy-icon-badge" style={{ background: '#2563eb' }}>
-          <FiFileText />
-        </div>
         <h1 className="policy-main-title">Điều Khoản Sử Dụng</h1>
         <p className="policy-update-date">
           Áp dụng cho mọi học viên &amp; người dùng nền tảng SpeakAI (2026)
